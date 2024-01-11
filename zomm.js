@@ -32,3 +32,10 @@ myChart.on("georoam", function(params) {
 ————————————————
 版权声明：本文为CSDN博主「另一个自己IT」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/weixin_46408500/article/details/128282213
+geo: [
+    {
+        // 其他配置...
+        animationDurationUpdate: 0
+    },
+    // 其他 geo 层...
+]
