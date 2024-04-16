@@ -62,3 +62,71 @@ export default {
   filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.1));
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+<template>
+  <div>
+    <!-- 弹框触发按钮 -->
+    <button @click="isOpen = true">打开弹框</button>
+
+    <!-- 弹框本身 -->
+    <div v-if="isOpen" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="isOpen = false">&times;</span>
+        <iframe src="https://example.com" frameborder="0" width="100%" height="500px"></iframe>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'IframeModal',
+  data() {
+    return {
+      isOpen: false
+    };
+  }
+}
+</script>
+
+<style scoped>
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+</style>
+
