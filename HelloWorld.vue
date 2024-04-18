@@ -108,3 +108,13 @@ const hideAllTexts = () => {
   display: block;
 }
 </style>
+
+
+
+
+.icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 16px; /* 调整字体大小以匹配其他文本 */
+  padding: 0 5px; /* 添加一些内边距 */
+}
