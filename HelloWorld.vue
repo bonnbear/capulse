@@ -118,3 +118,68 @@ const hideAllTexts = () => {
   font-size: 16px; /* 调整字体大小以匹配其他文本 */
   padding: 0 5px; /* 添加一些内边距 */
 }
+
+
+
+
+
+当然可以!在 Vue 中,`v-for` 指令不仅可以遍历数组和对象,还可以遍历返回可迭代对象的计算属性或方法。
+
+你可以将 `visibleEntries` 定义为一个函数,根据传入的 `id` 从大的模板对象中获取对应的对象,并返回该对象的部分键值对。下面是一个示例:
+
+```html
+<template>
+  <!-- 其他代码保持不变 -->
+  <span v-for="(value, key, index) in visibleEntries(selectedId)" :key="key" class="text-item"
+        :class="{ 'selected': selectedKey === key }"
+        @click="selectItem(key)">
+    {{ value }}
+  </span>
+  <!-- 其他代码保持不变 -->
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+  maxVisible: {
+    type: Number,
+    default: 4,
+  },
+});
+
+const selectedId = ref(null);
+// 其他代码保持不变
+
+const visibleEntries = (id) => {
+  if (id && props.data[id]) {
+    return Object.fromEntries(Object.entries(props.data[id]).slice(0, props.maxVisible));
+  }
+  return {};
+};
+
+// 其他代码保持不变
+</script>
+```
+
+在这个修改后的代码中:
+
+1. 我们将 `visibleEntries` 定义为一个函数,接受一个 `id` 参数。
+
+2. 在函数内部,我们首先检查 `id` 是否存在,并且在 `props.data` 中是否存在对应的对象。
+
+3. 如果条件满足,我们使用 `Object.entries()` 获取该对象的键值对数组,并使用 `slice()` 方法截取前 `props.maxVisible` 个键值对,然后使用 `Object.fromEntries()` 将其转换回对象并返回。
+
+4. 如果条件不满足,我们返回一个空对象 `{}`。
+
+5. 在模板中,我们将 `visibleEntries` 作为函数调用,并传入 `selectedId` 作为参数。
+
+这样,当 `selectedId` 发生变化时,`visibleEntries` 函数会根据新的 `id` 从大的模板对象中获取对应的对象,并返回其部分键值对。`v-for` 指令会自动重新渲染,显示更新后的键值对。
+
+你可以根据你的具体需求来修改 `visibleEntries` 函数的逻辑,以适应你的数据结构和业务需求。
+
+希望这个修改能够满足你的需求!如果你还有任何问题或需要进一步的帮助,请随时告诉我。
