@@ -98,3 +98,131 @@ app.mount('#app');
 ```
 
 通过上述方法，你可以确保你的自定义样式能有效地覆盖 Element Plus 的默认按钮样式。
+
+
+
+
+
+
+
+
+
+
+
+<template>
+  <div>
+    <el-form ref="form" :model="tableData" :rules="rules">
+      <el-table :data="paginatedData" style="width: 100%">
+        <el-table-column label="日期" width="180">
+          <template #default="scope">
+            <el-form-item :prop="`[${scope.$index}].date`">
+              <el-input v-model="scope.row.date" placeholder="请输入日期" @input="markAsEdited(scope.$index)"></el-input>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="姓名" width="180">
+          <template #default="scope">
+            <el-form-item :prop="`[${scope.$index}].name`">
+              <el-input v-model="scope.row.name" placeholder="请输入姓名" @input="markAsEdited(scope.$index)"></el-input>
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="地址">
+          <template #default="scope">
+            <el-form-item :prop="`[${scope.$index}].address`">
+              <el-input v-model="scope.row.address" placeholder="请输入地址" @input="markAsEdited(scope.$index)"></el-input>
+            </el-form-item>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[5, 10, 15]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="tableData.length">
+      </el-pagination>
+    </el-form>
+    <el-button type="primary" @click="handleSubmit">提交</el-button>
+    <el-button @click="checkChanges">检查更改</el-button>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      tableData: [
+        { date: '2023-01-01', name: '张三', address: '北京市朝阳区', isEdited: false },
+        { date: '2023-01-02', name: '李四', address: '上海市浦东新区', isEdited: false },
+        { date: '2023-01-03', name: '王五', address: '广州市天河区', isEdited: false },
+        { date: '2023-01-04', name: '赵六', address: '深圳市南山区', isEdited: false },
+        { date: '2023-01-05', name: '孙七', address: '成都市锦江区', isEdited: false },
+        { date: '2023-01-06', name: '周八', address: '武汉市江岸区', isEdited: false },
+        { date: '2023-01-07', name: '吴九', address: '杭州市拱墅区', isEdited: false },
+        { date: '2023-01-08', name: '郑十', address: '南京市鼓楼区', isEdited: false },
+        { date: '2023-01-09', name: '王十一', address: '西安市碑林区', isEdited: false },
+        { date: '2023-01-10', name: '杨十二', address: '苏州市姑苏区', isEdited: false },
+        { date: '2023-01-11', name: '张十三', address: '天津市和平区', isEdited: false }
+      ],
+      originalData: [],
+      currentPage: 1,
+      pageSize: 10,
+      rules: {
+        date: [{ required: true, message: '请输入日期', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
+      }
+    }
+  },
+  created() {
+    this.originalData = JSON.parse(JSON.stringify(this.tableData)); // 存储原始数据用于更改检测
+  },
+  methods: {
+    handleSubmit() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.submitData();
+        } else {
+          this.$message.error('请检查输入是否正确且完整！');
+          return false;
+        }
+      });
+    },
+    submitData() {
+      console.log('提交数据:', this.tableData);
+      this.$message.success('提交成功！');
+    },
+    markAsEdited(index) {
+      this.tableData[index].isEdited = true;
+    },
+    checkChanges() {
+      const changes = this.tableData.some((row, index) => 
+        row.isEdited && JSON.stringify(row) !== JSON.stringify(this.originalData[index])
+      );
+      if (changes) {
+        alert('有未保存的更改，请检查！');
+      } else {
+        alert('所有更改均已保存。');
+      }
+    },
+    handleSizeChange(newSize) {
+      this.pageSize = newSize;
+      this.handleCurrentChange(1); // 重置到第一页
+    },
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage;
+    }
+  },
+  computed: {
+    paginatedData() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.tableData.slice(start, end);
+    }
+  }
+}
+</script>
+
