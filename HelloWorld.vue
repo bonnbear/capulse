@@ -45,7 +45,68 @@ onUnmounted(() => {
 
 
 
+<!-- App.vue -->
+<template>
+  <div class="container">
+    <h1>2023年事件时间轴</h1>
+    
+    <!-- 月份导航栏 -->
+    <nav class="month-nav">
+      <a v-for="month in months" :key="month" :href="`#${month}月`">{{ month }}月</a>
+    </nav>
+    
+    <!-- 时间轴主体 -->
+    <div class="timeline">
+      <section v-for="month in months" :key="month" :id="`${month}月`" class="month">
+        <h2>{{ month }}月</h2>
+        <ul>
+          <li v-for="event in getEventsByMonth(month)" :key="event.id">
+            {{ event.date }} <span class="event" @click="showDetail(event)">{{ event.title }}</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+    
+    <!-- 事件详情弹窗 -->
+    <div v-if="selectedEvent" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="selectedEvent = null">&times;</span>
+        <h3>{{ selectedEvent.title }}</h3>
+        <p>{{ selectedEvent.detail }}</p>
+      </div>
+    </div>
+  </div>
+</template>
 
+<script setup>
+import { ref, computed } from 'vue';
+
+const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+const events = [
+  { id: 1, month: 1, date: '1.1', title: '元旦节', detail: '新年快乐!' },
+  { id: 2, month: 1, date: '1.2', title: 'XXX事件', detail: 'xxx' },
+  // ... 更多事件数据
+];
+
+const selectedEvent = ref(null);
+
+// 根据月份筛选事件
+const getEventsByMonth = computed(() => {
+  return (month) => {
+    return events.filter(event => event.month === month);
+  };
+});
+
+// 显示事件详情
+const showDetail = (event) => {
+  selectedEvent.value = event;
+};
+</script>
+
+<style scoped>
+/* 这里添加必要的CSS样式 */
+</style>
 
 
 
