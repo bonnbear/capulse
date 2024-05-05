@@ -110,3 +110,41 @@ const paginatedData = computed(() => {
   return tableData.value.slice(start, end);
 });
 </script>
+
+
+
+
+
+
+
+
+
+
+
+function validateDate(rule, value, callback) {
+  // 日期格式校验逻辑
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(value)) {
+    callback(new Error('日期格式不正确,请使用 YYYY-MM-DD 格式'));
+  } else {
+    callback();
+  }
+}
+
+function validateName(rule, value, callback) {
+  // 姓名校验逻辑
+  if (value.length < 2 || value.length > 10) {
+    callback(new Error('姓名长度应在 2 到 10 个字符之间'));
+  } else {
+    callback();
+  }
+}
+
+function validateAddress(rule, value, callback) {
+  // 地址校验逻辑
+  if (value.length < 5 || value.length > 50) {
+    callback(new Error('地址长度应在 5 到 50 个字符之间'));
+  } else {
+    callback();
+  }
+}
