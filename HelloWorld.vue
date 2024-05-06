@@ -209,18 +209,17 @@ function validateAddress(rule, value, callback) {
 
 
 
-
-    <template>
+<template>
   <div class="year-container">
-    <div class="month-container" v-for="month in months" :key="month">
+    <div class="month-container" v-for="info in sortedMonthInfo" :key="info.month">
       <div class="month">
-        {{ month }}月
+        {{ info.month }}月
       </div>
       <div class="content-container">
         <div class="line"></div>
         <div class="contents">
-          <div class="content" v-for="info in monthInfo[month]" :key="info">
-            {{ info }}
+          <div class="content" v-for="event in info.events" :key="event">
+            {{ event }}
           </div>
         </div>
       </div>
@@ -229,9 +228,9 @@ function validateAddress(rule, value, callback) {
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
-const months = ref(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
+// 原始月份信息
 const monthInfo = ref({
   '1': ['新年活动', '促销开始'],
   '2': ['情人节特惠'],
@@ -245,6 +244,17 @@ const monthInfo = ref({
   '10': ['国庆节', '万圣节'],
   '11': ['双十一', '感恩节'],
   '12': ['圣诞节', '年终总结']
+});
+
+// 使用计算属性排序月份信息
+const sortedMonthInfo = computed(() => {
+  // 获取月份键，将它们转换为数字进行排序
+  const months = Object.keys(monthInfo.value).sort((a, b) => Number(a) - Number(b));
+  // 创建并返回一个新的数组，其中包含排序后的月份和事件
+  return months.map(month => ({
+    month: month,
+    events: monthInfo.value[month]
+  }));
 });
 </script>
 
