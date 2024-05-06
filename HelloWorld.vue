@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="formRef" :model="tableData" :rules="rules">
-      <el-table :data="paginatedData" style="width: 100%">
+      <el-table :data="paginatedData" style="width: 100%" header-cell-class-name="custom-header-style">
         <el-table-column label="日期" width="180">
           <template #default="{ row, $index }">
             <el-form-item :prop="`${$index}.date`">
@@ -21,6 +21,11 @@
             <el-form-item :prop="`${$index}.address`">
               <el-input v-model="row.address" placeholder="请输入地址" @input="markAsEdited($index)"></el-input>
             </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template #default="{ row, $index }">
+            <el-button type="danger" size="small" @click="removeRow($index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,7 +53,7 @@ const tableData = ref([
   { date: '2023-01-01', name: '张三', address: '北京市朝阳区', isEdited: false },
   { date: '2023-01-02', name: '李四', address: '上海市浦东新区', isEdited: false },
   { date: '2023-01-03', name: '王五', address: '广州市天河区', isEdited: false },
-  // 添加更多示例数据...
+  // 可以继续添加更多行数据...
 ]);
 const originalData = JSON.parse(JSON.stringify(tableData.value));
 
@@ -59,9 +64,9 @@ const formRef = ref(null);
 const rules = computed(() => {
   const rulesObj = {};
   tableData.value.forEach((_, index) => {
-    rulesObj[`${index}.date`] = [{ required: true, message: '请输入日期', trigger: 'change' }];
-    rulesObj[`${index}.name`] = [{ required: true, message: '请输入姓名', trigger: 'change' }];
-    rulesObj[`${index}.address`] = [{ required: true, message: '请输入地址', trigger: 'change' }];
+    rulesObj[`${index}.date`] = [{ required: true, message: `请输入日期`, trigger: 'blur' }];
+    rulesObj[`${index}.name`] = [{ required: true, message: `请输入姓名`, trigger: 'blur' }];
+    rulesObj[`${index}.address`] = [{ required: true, message: `请输入地址`, trigger: 'blur' }];
   });
   return rulesObj;
 });
@@ -97,9 +102,13 @@ function checkChanges() {
   }
 }
 
+function removeRow(index) {
+  tableData.value.splice(index, 1);
+  ElMessage.success('行已删除。');
+}
+
 function handleSizeChange(newSize) {
   pageSize.value = newSize;
-  handleCurrentChange(1); // 重置到第一页
 }
 
 function handleCurrentChange(newPage) {
@@ -107,13 +116,16 @@ function handleCurrentChange(newPage) {
 }
 
 const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return tableData.value.slice(start, end);
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  return tableData.value.slice(startIndex, startIndex + pageSize.value);
 });
 </script>
 
-
+<style>
+.custom-header-style {
+  background: black!important; /* 淡蓝色背景 */
+}
+</style>
 
 
 function deleteFirstProperty(obj) {
