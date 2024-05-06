@@ -3,22 +3,22 @@
     <el-form ref="formRef" :model="tableData" :rules="rules">
       <el-table :data="paginatedData" style="width: 100%">
         <el-table-column label="日期" width="180">
-          <template #default="{row, $index}">
-            <el-form-item :prop="`date`">
+          <template #default="{ row, $index }">
+            <el-form-item :prop="`${$index}.date`">
               <el-input v-model="row.date" placeholder="请输入日期" @input="markAsEdited($index)"></el-input>
             </el-form-item>
           </template>
         </el-table-column>
         <el-table-column label="姓名" width="180">
-          <template #default="{row, $index}">
-            <el-form-item :prop="`name`">
+          <template #default="{ row, $index }">
+            <el-form-item :prop="`${$index}.name`">
               <el-input v-model="row.name" placeholder="请输入姓名" @input="markAsEdited($index)"></el-input>
             </el-form-item>
           </template>
         </el-table-column>
         <el-table-column label="地址">
-          <template #default="{row, $index}">
-            <el-form-item :prop="`address`">
+          <template #default="{ row, $index }">
+            <el-form-item :prop="`${$index}.address`">
               <el-input v-model="row.address" placeholder="请输入地址" @input="markAsEdited($index)"></el-input>
             </el-form-item>
           </template>
@@ -31,7 +31,8 @@
         :page-sizes="[5, 10, 15]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.length">
+        :total="tableData.length"
+      >
       </el-pagination>
     </el-form>
     <el-button type="primary" @click="handleSubmit">提交</el-button>
@@ -55,17 +56,19 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const formRef = ref(null);
 
-const rules = {
-  date: [{ required: true, message: '请输入日期', trigger: 'change' }],
-  name: [{ required: true, message: '请输入姓名', trigger: 'change' }],
-  address: [{ required: true, message: '请输入地址', trigger: 'change' }],
-};
+const rules = computed(() => {
+  const rulesObj = {};
+  tableData.value.forEach((_, index) => {
+    rulesObj[`${index}.date`] = [{ required: true, message: '请输入日期', trigger: 'change' }];
+    rulesObj[`${index}.name`] = [{ required: true, message: '请输入姓名', trigger: 'change' }];
+    rulesObj[`${index}.address`] = [{ required: true, message: '请输入地址', trigger: 'change' }];
+  });
+  return rulesObj;
+});
 
 function handleSubmit() {
-  debugger
   formRef.value.validate((valid) => {
     if (valid) {
-      debugger
       submitData();
     } else {
       ElMessage.error('请检查输入是否正确且完整！');
@@ -80,12 +83,11 @@ function submitData() {
 }
 
 function markAsEdited(index) {
-  debugger
   tableData.value[index].isEdited = true;
 }
 
 function checkChanges() {
-  const changes = tableData.value.some((row, index) => 
+  const changes = tableData.value.some((row, index) =>
     row.isEdited && JSON.stringify(row) !== JSON.stringify(originalData[index])
   );
   if (changes) {
@@ -114,8 +116,36 @@ const paginatedData = computed(() => {
 
 
 
+function deleteFirstProperty(obj) {
+  // 获取对象所有的键
+  const keys = Object.keys(obj);
 
+  // 如果对象没有键，则不进行操作
+  if (keys.length === 0) {
+    console.log("对象为空，无键可删除");
+    return;
+  }
 
+  // 获取第一个键
+  const keyToDelete = keys[0];
+
+  // 删除第一个键
+  delete obj[keyToDelete];
+
+  // 输出删除后的对象
+  console.log(`删除第一个属性 '${keyToDelete}' 后的对象:`, obj);
+}
+
+// 示例对象
+const exampleObj = {
+  a: 1,
+  b: 2,
+  c: 3,
+  d: 4
+};
+
+// 调用函数删除第一个属性
+deleteFirstProperty(exampleObj);
 
 
 
