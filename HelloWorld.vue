@@ -190,3 +190,115 @@ function validateAddress(rule, value, callback) {
     callback();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <template>
+  <div class="year-container">
+    <div class="month-container" v-for="month in months" :key="month">
+      <div class="month">
+        {{ month }}月
+      </div>
+      <div class="content-container">
+        <div class="line"></div>
+        <div class="contents">
+          <div class="content" v-for="info in monthInfo[month]" :key="info">
+            {{ info }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const months = ref(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
+const monthInfo = ref({
+  '1': ['新年活动', '促销开始'],
+  '2': ['情人节特惠'],
+  '3': ['春季新品'],
+  '4': ['清明假期'],
+  '5': ['劳动节', '儿童节'],
+  '6': ['夏季促销'],
+  '7': ['暑期活动'],
+  '8': ['学校开学', '中秋节'],
+  '9': ['国庆大促'],
+  '10': ['国庆节', '万圣节'],
+  '11': ['双十一', '感恩节'],
+  '12': ['圣诞节', '年终总结']
+});
+</script>
+
+<style>
+.year-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+.month-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150px; /* 调整容器宽度以适应更多内容 */
+  margin-top: 20px; /* 增加与上方元素的间隔 */
+}
+
+.month {
+  padding: 10px;
+  background-color: #e8e8e8;
+  margin-bottom: 10px; /* 增加与内容容器的间隔 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  width: 100%; /* 确保月份框宽度填满容器 */
+}
+
+.content-container {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.line {
+  height: 80px; /* 增加线的高度 */
+  width: 2px;
+  background-color: black;
+  margin-right: 5px; /* 在线和文本内容之间添加间隔 */
+}
+
+.contents {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: calc(100% - 7px); /* 调整宽度以防止溢出 */
+}
+
+.content {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+</style>
