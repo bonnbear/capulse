@@ -1,12 +1,23 @@
 <template>
-  <el-select
-    v-model="selectedLabel"
-    filterable
-    placeholder="Select"
-    style="width: 240px"
-    @change="handleChange"
-  >
-    <el-option value="" style="height: auto">
+  <div class="tree-select">
+    <el-popover
+      ref="popoverRef"
+      placement="bottom-start"
+      trigger="manual"
+      v-model:visible="popoverVisible"
+      :width="popoverWidth"
+      popper-class="custom-popover"
+    >
+      <!-- 将输入框放置在这里，作为触发弹出层的元素 -->
+      <template #reference>
+        <el-input
+          v-model="selectedLabel"
+          placeholder="Please input"
+          @focus="showPopover"
+          @input="filterTextChange"
+        />
+      </template>
+
       <el-tree
         ref="treeRef"
         :data="data"
@@ -15,21 +26,30 @@
         :filter-node-method="filterNode"
         @node-click="handleNodeClick"
       />
-    </el-option>
-  </el-select>
+    </el-popover>
+  </div>
 </template>
-
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { ElTree } from 'element-plus'
 
 const selectedLabel = ref('')
+const filterText = ref('')
+const popoverVisible = ref(false)
+const popoverRef = ref(null)
 const treeRef = ref(null)
+const popoverWidth = ref(0)
 
 const defaultProps = {
   children: 'children',
   label: 'label',
 }
+
+watch(filterText, (val) => {
+  if (treeRef.value) {
+    treeRef.value.filter(val)
+  }
+})
 
 const filterNode = (value, data) => {
   if (!value) return true
@@ -38,13 +58,23 @@ const filterNode = (value, data) => {
 
 const handleNodeClick = (data) => {
   selectedLabel.value = data.label
-  treeRef.value.filter('')
+  filterText.value = ''
+  popoverVisible.value = false
 }
 
-const handleChange = (value) => {
-  if (!value) {
-    selectedLabel.value = ''
-  }
+const showPopover = () => {
+  popoverVisible.value = true
+  nextTick(() => {
+    popoverWidth.value = popoverRef.value.width
+  })
+}
+
+const hidePopover = () => {
+  popoverVisible.value = false
+}
+
+const filterTextChange = (val) => {
+  filterText.value = val
 }
 
 const data = [
@@ -62,7 +92,7 @@ const data = [
           },
           {
             id: 10,
-            label: 'Level three 1-1-2-9',
+            label: 'Level three 1-1-2',
           },
         ],
       },
@@ -99,7 +129,20 @@ const data = [
 ]
 </script>
 
-
+<style scoped>
+.tree-select {
+  width: 240px;
+}
+:deep(.custom-popover) {
+  padding: 0;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+:deep(.custom-popover .el-tree) {
+  max-height: 300px;
+  overflow-y: auto;
+}
+</style>
 
 
 
