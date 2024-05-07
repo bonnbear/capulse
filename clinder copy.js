@@ -1,102 +1,64 @@
 <template>
-  <div class="timeline-container">
-    <!-- 时间轴主体 -->
-    <div class="timeline">
-      <div v-for="event in events" :key="event.id" class="timeline-item">
-        <div class="timeline-content">{{ event.date }}</div>
-        <div class="timeline-bar"></div>
-        <div class="index-node" @click="showDetail(event)">{{ event.index }}</div>
-      </div>
-    </div>
-    
-    <!-- 事件详情弹窗 -->
-    <div v-if="selectedEvent" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h3>{{ selectedEvent.title }}</h3>
-        <p>{{ selectedEvent.detail }}</p>
-      </div>
-    </div>
-  </div>
+  <el-tooltip :content="tooltipContent" placement="top">
+    <el-input
+      v-model="formattedValue"
+      placeholder="请输入数字"
+      @blur="handleBlur"
+      @focus="handleFocus"
+    ></el-input>
+  </el-tooltip>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
-const events = [
-  { id: 1, date: '2023-01-01', title: '新年', detail: '庆祝新年的到来', index: 1 },
-  { id: 2, date: '2023-02-14', title: '情人节', detail: '庆祝爱与被爱', index: 2 },
-  // 更多事件...
-];
+const rawValue = ref('');
+const inputFocused = ref(false);
 
-const selectedEvent = ref(null);
+const formattedValue = computed({
+  get() {
+    if (inputFocused.value) {
+      return rawValue.value;
+    }
+    return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 20
+    }).format(Number(rawValue.value.replace(/,/g, '')));
+  },
+  set(value) {
+    const numericValue = value.replace(/[^\d.-]/g, '');
+    rawValue.value = numericValue;
+  }
+});
 
-const showDetail = (event) => {
-  selectedEvent.value = event;
-};
+const tooltipContent = computed(() => {
+  const num = parseFloat(rawValue.value.replace(/,/g, ''));
+  if (!isNaN(num)) {
+    if (num >= 100000000) {
+      return `${(num / 100000000).toFixed(2)} 亿`;
+    } else if (num >= 10000) {
+      return `${(num / 10000).toFixed(2)} 万`;
+    } else {
+      return `${num} 元`;
+    }
+  }
+  return '';
+});
 
-const closeModal = () => {
-  selectedEvent.value = null;
-};
+function handleBlur() {
+  inputFocused.value = false;
+}
+
+function handleFocus() {
+  inputFocused.value = true;
+}
+
+watch(rawValue, (newVal) => {
+  if (!inputFocused.value) {
+    formattedValue.value = newVal;
+  }
+});
 </script>
 
 <style scoped>
-.timeline-container {
-  position: relative;
-  width: 200px;
-}
-.timeline {
-  position: relative;
-  width: 20px;
-  background: #ddd;
-  height: 100%;
-  float: left;
-}
-.timeline-item {
-  position: relative;
-  height: 50px; /* 每个事件的间距 */
-}
-.timeline-content {
-  margin-left: 30px;
-}
-.timeline-bar {
-  position: absolute;
-  width: 50px;
-  height: 4px;
-  background: #333;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.index-node {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: red;
-  border-radius: 50%;
-  cursor: pointer;
-  left: 70px;
-  top: 50%;
-  transform: translateY(-50%);
-  text-align: center;
-  color: #fff;
-}
-.modal {
-  position: fixed;
-  top: 20%;
-  right: 10%;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 20px;
-  z-index: 1000;
-}
-.modal-content {
-  position: relative;
-}
-.close {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  cursor: pointer;
-}
+/* 可以在这里添加一些样式 */
 </style>
