@@ -307,3 +307,32 @@ function handleNodeClick(data, node) {
   background-color: #f5f7fa;
 }
 </style>
+// 流程图数据转换
+
+
+const monthInfo = computed(() => {
+  const sortedData = {};
+  // 收集数据，包括日期和内容
+  tableData.value.forEach(item => {
+    const month = new Date(item.date).getMonth() + 1; // 从日期中提取月份
+    if (!sortedData[month]) {
+      sortedData[month] = [];
+    }
+    sortedData[month].push({
+      date: item.date,
+      content: item.content
+    }); // 将日期和内容一起添加到相应的月份
+  });
+
+  // 确保每个月份内的数据按日期排序
+  for (const [key, values] of Object.entries(sortedData)) {
+    sortedData[key].sort((a, b) => {
+      // 使用日期进行排序
+      return new Date(a.date) - new Date(b.date);
+    });
+
+    // 仅提取内容字段
+    sortedData[key] = values.map(item => item.content);
+  }
+  return sortedData;
+});
