@@ -219,3 +219,91 @@ function handleNodeClick(data) {
 
 const treeRef = ref(null);
 </script>
+
+
+
+
+
+<template>
+  <div>
+    <el-tree
+      :data="treeData"
+      :props="defaultProps"
+      :render-content="renderContent"
+      node-key="id"
+      ref="treeRef"
+      draggable
+    ></el-tree>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const clickableCode = '001-1';
+
+const treeData = ref([
+  {
+    id: 1,
+    name: '一级 1',
+    code: '001',
+    children: [
+      {
+        id: 4,
+        name: '二级 1-1',
+        code: '001-1',
+        children: [
+          {
+            id: 9,
+            name: '三级 1-1-1',
+            code: '001-1-1'
+          },
+          {
+            id: 10,
+            name: '三级 1-1-2',
+            code: '001-1-2'
+          }
+        ]
+      }
+    ]
+  },
+]);
+
+const defaultProps = {
+  children: 'children',
+  label: 'name'
+};
+
+const treeRef = ref(null);
+
+function isClickable(node) {
+  return node.code === clickableCode;
+}
+
+function renderContent(h, { node, data, store }) {
+  let nodeClass = isClickable(node) ? '' : 'disabled-node';
+  return h('span', {
+    class: nodeClass,
+    on: {
+      click: () => handleNodeClick(data, node)
+    }
+  }, data.name);
+}
+
+function handleNodeClick(data, node) {
+  if (isClickable(node)) {
+    console.log('Node clicked:', data.name);
+  }
+}
+</script>
+
+<style>
+.disabled-node {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.disabled-node > .el-tree-node__content {
+  background-color: #f5f7fa;
+}
+</style>
