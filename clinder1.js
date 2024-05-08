@@ -142,3 +142,80 @@ const paginatedData = computed(() => {
   background: black!important;
 }
 </style>
+
+
+// 过滤树
+<template>
+  <div>
+    <el-tree
+      :data="filteredTreeData"
+      :props="defaultProps"
+      @node-click="handleNodeClick"
+      node-key="id"
+      ref="treeRef"
+      draggable
+    ></el-tree>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+
+// 原始树形数据
+const treeData = ref([
+  {
+    id: 1,
+    name: '一级 1',
+    code: '001',
+    children: [
+      {
+        id: 4,
+        name: '二级 1-1',
+        code: '001-1',
+        children: [
+          {
+            id: 9,
+            name: '三级 1-1-1',
+            code: '001-1-1'
+          },
+          {
+            id: 10,
+            name: '三级 1-1-2',
+            code: '001-1-2'
+          }
+        ]
+      }
+    ]
+  },
+  // 更多节点...
+]);
+
+// 过滤树的函数
+function filterTree(code) {
+  const result = [];
+  function traverse(nodes) {
+    nodes.forEach(node => {
+      if (node.code === code || (node.children && node.children.some(child => traverse([child])))) {
+        result.push(node);
+      }
+    });
+  }
+  traverse(treeData.value);
+  console.log(result,'result')
+  return result;
+}
+
+// 示例：过滤树以显示code为'001-1'及其子节点的节点
+const filteredTreeData = ref(filterTree('001'));
+
+const defaultProps = {
+  children: 'children',
+  label: 'name'
+};
+
+function handleNodeClick(data) {
+  console.log('Node clicked:', data.name);
+}
+
+const treeRef = ref(null);
+</script>
