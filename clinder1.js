@@ -336,3 +336,17 @@ const monthInfo = computed(() => {
   }
   return sortedData;
 });
+
+
+
+
+const rules = computed(() => {
+  return tableData.rows.map((item, index) => {
+    return {
+      date: !item.isNew ? [{ required: true, message: '请输入日期', trigger: 'blur' }] : [],
+      name: !item.isNew ? [{ required: true, message: '请输入姓名', trigger: 'blur' }] : [],
+      address: !item.isNew ? [{ required: true, message: '请输入地址', trigger: 'blur' }] : [],
+      content: !item.isNew ? [{ required: true, message: '请输入内容', trigger: 'blur' }] : []
+    };
+  });
+});
