@@ -135,3 +135,21 @@ const data = [
   overflow-y: auto;
 }
 </style>
+
+
+
+
+const getPath = (node, path = []) => {
+  path.unshift(node.label)
+  if (node.parent) {
+    getPath(node.parent, path)
+  }
+  return path
+}
+
+const handleNodeClick = (data, node) => {
+  const pathLabels = getPath(node)
+  selectedLabel.value = pathLabels.join(' > ')
+  filterText.value = ''
+  popoverVisible.value = false
+}
