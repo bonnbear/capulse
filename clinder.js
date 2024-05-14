@@ -153,3 +153,22 @@ const handleNodeClick = (data, node) => {
   filterText.value = ''
   popoverVisible.value = false
 }
+
+
+
+
+
+const findNodePath = (node, treeData, path = []) => {
+  for (const item of treeData) {
+    path.push(item.label); // 将当前节点的标签添加到路径中
+    if (item.id === node.id) {
+      return path; // 找到目标节点，返回路径
+    }
+    if (item.children) {
+      const result = findNodePath(node, item.children, path); // 递归查找子节点
+      if (result) return result; // 如果在子节点中找到目标节点，返回路径
+    }
+    path.pop(); // 当前节点不是目标节点且子节点中也未找到，移除当前节点标签
+  }
+  return null; // 在整个树中未找到目标节点，返回 null
+}
