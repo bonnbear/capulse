@@ -312,3 +312,153 @@ const sortedMonthInfo = computed(() => {
   width: 100%;
 }
 </style>
+
+
+
+
+
+
+<template>
+  <div class="timeline-container">
+    <div class="types">
+      <div v-for="type in types" :key="type">{{ type }}</div>
+    </div>
+    <div class="timeline">
+      <div class="month-container" v-for="(events, month) in monthInfo" :key="month">
+        <div class="month">{{ month }}月</div>
+        <div class="content-container">
+          <div class="line"></div>
+          <div class="contents">
+            <div class="content" v-for="(event, index) in events" :key="index">
+              <div>{{ event.content }}</div>
+              <div class="type-dot" :style="{ backgroundColor: getTypeColor(event.type) }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+
+const tableData = ref([
+  { date: '2023-01-10', content: '产品发布会', type: '市场活动' },
+  { date: '2023-02-14', content: '情人节促销', type: '促销活动' },
+  { date: '2023-03-01', content: '新品上市', type: '新品发布' },
+  { date: '2023-03-08', content: '妇女节特惠', type: '促销活动' },
+  { date: '2023-04-01', content: '愚人节活动', type: '市场活动' },
+  { date: '2023-05-01', content: '劳动节放假通知', type: '公司公告' },
+  { date: '2023-06-01', content: '儿童节促销', type: '促销活动' },
+  { date: '2023-07-01', content: '夏季新品发布', type: '新品发布' },
+  { date: '2023-08-01', content: '暑期大促', type: '促销活动' },
+  { date: '2023-09-10', content: '教师节感恩活动', type: '市场活动' },
+  { date: '2023-10-01', content: '国庆节放假通知', type: '公司公告' },
+  { date: '2023-11-11', content: '双11大促', type: '促销活动' },
+  { date: '2023-12-25', content: '圣诞节活动', type: '市场活动' },
+]);
+
+const monthInfo = computed(() => {
+  const info = {};
+
+  tableData.value.forEach(item => {
+    const month = item.date.slice(5, 7);
+
+    if (!info[month]) {
+      info[month] = [];
+    }
+    info[month].push({ content: item.content, type: item.type, date: item.date });
+  });
+
+  // 对每个月的事件按日期排序
+  Object.values(info).forEach(events => {
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  });
+
+  return info;
+});
+
+const types = computed(() => {
+  return [...new Set(tableData.value.map(item => item.type))];
+});
+
+const typeColors = {
+  '市场活动': 'blue',
+  '促销活动': 'green', 
+  '新品发布': 'purple',
+  '公司公告': 'orange',
+};
+
+function getTypeColor(type) {
+  return typeColors[type] || 'gray';
+}
+</script>
+
+<style>
+.timeline-container {
+  display: flex;
+}
+
+.types {
+  margin-right: 20px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  display: flex;
+  justify-content: space-around;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.month-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 200px;
+}
+
+.month {
+  margin-bottom: 10px;
+  font-weight: bold;
+  writing-mode: horizontal-tb;
+}
+
+.content-container {
+  display: flex;
+}
+
+.line {
+  width: 2px;
+  background-color: black;
+  margin-right: 10px;
+}
+
+.contents {
+  flex-grow: 1;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.type-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+</style>
+
+
+
+
+
+
+    
